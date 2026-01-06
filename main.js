@@ -1,7 +1,6 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-// プレイヤー
 const player = {
   x: 280,
   y: 180,
@@ -10,7 +9,7 @@ const player = {
   speed: 4
 };
 
-// 入力（code方式）
+// キー入力（codeで統一）
 const keys = {};
 
 document.addEventListener("keydown", (e) => {
@@ -22,6 +21,7 @@ document.addEventListener("keyup", (e) => {
 });
 
 function update() {
+  // WASDのみ
   if (keys["KeyA"]) player.x -= player.speed;
   if (keys["KeyD"]) player.x += player.speed;
   if (keys["KeyW"]) player.y -= player.speed;
@@ -33,8 +33,18 @@ function update() {
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // プレイヤー
   ctx.fillStyle = "cyan";
   ctx.fillRect(player.x, player.y, player.w, player.h);
+
+  // ★ デバッグ表示（ここ重要）
+  ctx.fillStyle = "white";
+  ctx.font = "14px monospace";
+  ctx.fillText("W: " + !!keys["KeyW"], 10, 20);
+  ctx.fillText("A: " + !!keys["KeyA"], 10, 40);
+  ctx.fillText("S: " + !!keys["KeyS"], 10, 60);
+  ctx.fillText("D: " + !!keys["KeyD"], 10, 80);
 }
 
 function loop() {
