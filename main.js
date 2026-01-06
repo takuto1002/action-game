@@ -49,7 +49,8 @@ class Enemy1 {
   update() {
     this.timer++;
     this.shootTimer++;
-    if(this.shootTimer >= 60){
+
+    if(this.shootTimer >= 60){ // 1秒に1発
       shootBullet(this);
       this.shootTimer = 0;
     }
@@ -61,38 +62,19 @@ class Enemy1 {
   }
 
   isExpired() {
-    return this.timer >= 300;
+    return this.timer >= 300; // 5秒で消滅
   }
 }
 
 // ================== 敵管理 ==================
 const enemies1 = [];
 
+// 固定位置に敵を1体右外にスポーン
 function spawnEnemy1() {
-  let x, y;
-  const edge = Math.floor(Math.random() * 4); // 0:上,1:下,2:左,3:右
-  const margin = 20; // フィールド外に必ず出る距離
-
-  switch(edge){
-    case 0: // 上
-      x = field.x + Math.random() * (field.w - 20);
-      y = field.y - margin - 20;
-      break;
-    case 1: // 下
-      x = field.x + Math.random() * (field.w - 20);
-      y = field.y + field.h + margin;
-      break;
-    case 2: // 左
-      x = field.x - margin - 20;
-      y = field.y + Math.random() * (field.h - 20);
-      break;
-    case 3: // 右
-      x = field.x + field.w + margin;
-      y = field.y + Math.random() * (field.h - 20);
-      break;
-  }
+  const x = field.x + field.w + 20; // 右外
+  const y = field.y + field.h / 2 - 10; // フィールド中央高さ
   enemies1.push(new Enemy1(x, y));
-  console.log("エネミー1出現:", x.toFixed(1), y.toFixed(1));
+  console.log("エネミー1出現:", x, y);
 }
 
 // ================== 入力管理 ==================
@@ -108,26 +90,26 @@ function update() {
   if(keys["KeyW"]) player.y -= player.speed;
   if(keys["KeyS"]) player.y += player.speed;
 
+  // フィールド内制限
   player.x = Math.max(field.x, Math.min(field.x + field.w - player.w, player.x));
   player.y = Math.max(field.y, Math.min(field.y + field.h - player.h, player.y));
 
-  // 敵更新（逆ループでsplice安全）
+  // 敵更新（逆ループ）
   for(let i = enemies1.length - 1; i >= 0; i--){
     const e = enemies1[i];
     e.update();
     if(e.isExpired()) enemies1.splice(i, 1);
   }
 
-  // 弾更新
+  // 弾更新（逆ループ）
   for(let i = bullets.length - 1; i >= 0; i--){
     const b = bullets[i];
     b.x += b.dx;
     b.y += b.dy;
     b.life++;
 
-    if(b.life > 300) { bullets.splice(i, 1); continue; }
+    if(b.life > 300){ bullets.splice(i, 1); continue; }
 
-    // 当たり判定
     if(b.x < player.x + player.w &&
        b.x + 4 > player.x &&
        b.y < player.y + player.h &&
@@ -161,16 +143,14 @@ function draw() {
 }
 
 // ================== メインループ ==================
-let spawnCounter = 0;
+let spawned = false; // 一度だけ出す
 function loop() {
   update();
   draw();
 
-  // 1秒ごとに敵出現
-  spawnCounter++;
-  if(spawnCounter >= 60){
+  if(!spawned){
     spawnEnemy1();
-    spawnCounter = 0;
+    spawned = true;
   }
 
   requestAnimationFrame(loop);
