@@ -49,8 +49,6 @@ class Enemy1 {
   update() {
     this.timer++;
     this.shootTimer++;
-
-    // 1秒に1発
     if(this.shootTimer >= 60){
       shootBullet(this);
       this.shootTimer = 0;
@@ -63,36 +61,38 @@ class Enemy1 {
   }
 
   isExpired() {
-    return this.timer >= 300; // 5秒で消滅
+    return this.timer >= 300;
   }
 }
 
 // ================== 敵管理 ==================
 const enemies1 = [];
 
-// フィールド四辺からランダムに出現
 function spawnEnemy1() {
   let x, y;
   const edge = Math.floor(Math.random() * 4); // 0:上,1:下,2:左,3:右
+  const margin = 20; // フィールド外に必ず出る距離
+
   switch(edge){
     case 0: // 上
-      x = field.x + Math.random() * field.w - 10;
-      y = field.y - 30;
+      x = field.x + Math.random() * (field.w - 20);
+      y = field.y - margin - 20;
       break;
     case 1: // 下
-      x = field.x + Math.random() * field.w - 10;
-      y = field.y + field.h + 10;
+      x = field.x + Math.random() * (field.w - 20);
+      y = field.y + field.h + margin;
       break;
     case 2: // 左
-      x = field.x - 30;
-      y = field.y + Math.random() * field.h - 10;
+      x = field.x - margin - 20;
+      y = field.y + Math.random() * (field.h - 20);
       break;
     case 3: // 右
-      x = field.x + field.w + 10;
-      y = field.y + Math.random() * field.h - 10;
+      x = field.x + field.w + margin;
+      y = field.y + Math.random() * (field.h - 20);
       break;
   }
   enemies1.push(new Enemy1(x, y));
+  console.log("エネミー1出現:", x.toFixed(1), y.toFixed(1));
 }
 
 // ================== 入力管理 ==================
@@ -108,41 +108,38 @@ function update() {
   if(keys["KeyW"]) player.y -= player.speed;
   if(keys["KeyS"]) player.y += player.speed;
 
-  // フィールド内制限
   player.x = Math.max(field.x, Math.min(field.x + field.w - player.w, player.x));
   player.y = Math.max(field.y, Math.min(field.y + field.h - player.h, player.y));
 
-  // 敵更新
-  enemies1.forEach((e, i) => {
+  // 敵更新（逆ループでsplice安全）
+  for(let i = enemies1.length - 1; i >= 0; i--){
+    const e = enemies1[i];
     e.update();
     if(e.isExpired()) enemies1.splice(i, 1);
-  });
+  }
 
   // 弾更新
-  bullets.forEach((b, i) => {
+  for(let i = bullets.length - 1; i >= 0; i--){
+    const b = bullets[i];
     b.x += b.dx;
     b.y += b.dy;
     b.life++;
 
-    // 5秒で消滅
-    if(b.life > 300) bullets.splice(i,1);
+    if(b.life > 300) { bullets.splice(i, 1); continue; }
 
     // 当たり判定
-    if(
-      b.x < player.x + player.w &&
-      b.x + 4 > player.x &&
-      b.y < player.y + player.h &&
-      b.y + 4 > player.y
-    ){
+    if(b.x < player.x + player.w &&
+       b.x + 4 > player.x &&
+       b.y < player.y + player.h &&
+       b.y + 4 > player.y){
       alert("ゲームオーバー！");
       location.reload();
     }
-  });
+  }
 }
 
 // ================== 描画処理 ==================
 function draw() {
-  // 背景
   ctx.fillStyle = "#222";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -165,14 +162,13 @@ function draw() {
 
 // ================== メインループ ==================
 let spawnCounter = 0;
-
 function loop() {
   update();
   draw();
 
-  // 2秒ごとにエネミー1出現
+  // 1秒ごとに敵出現
   spawnCounter++;
-  if(spawnCounter >= 120){
+  if(spawnCounter >= 60){
     spawnEnemy1();
     spawnCounter = 0;
   }
