@@ -1,21 +1,21 @@
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-// ================== フィールド ==================
+// ================== フィールド（中央配置） ==================
 const field = {
-  x: 150,
-  y: 100,
-  w: 300,
-  h: 200
+  w: 360,
+  h: 240,
 };
+field.x = (canvas.width - field.w) / 2;
+field.y = (canvas.height - field.h) / 2;
 
 // ================== プレイヤー ==================
 const player = {
-  x: field.x + field.w / 2 - 20,
-  y: field.y + field.h / 2 - 20,
-  w: 40,
-  h: 40,
-  speed: 4
+  w: 30,          // 少し小さく
+  h: 30,
+  x: field.x + field.w / 2 - 15,
+  y: field.y + field.h / 2 - 15,
+  speed: 5.5      // 少し速く
 };
 
 // ================== 入力管理 ==================
