@@ -2,92 +2,25 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>アリーナ型避けゲー</title>
+  <title>Dodge Arena</title>
   <style>
-    /* 画面全体を使ってcanvasを中央に配置 */
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center; /* 横中央 */
-      align-items: center;     /* 縦中央 */
-      background: #111;        /* 背景色（外側ゾーン） */
       overflow: hidden;
+      background-color: #111;
     }
-
     canvas {
       display: block;
-      background: #222; /* フィールド外ゾーンの色 */
+      margin: auto;
+      background-color: #222;
     }
   </style>
 </head>
+<!-- index.html の <head> に追加 -->
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
 <body>
   <canvas id="game" width="800" height="600"></canvas>
-
-  <script>
-    const canvas = document.getElementById("game");
-    const ctx = canvas.getContext("2d");
-
-    // ================== フィールド ==================
-    const field = {
-      w: 400,
-      h: 300
-    };
-    field.x = (canvas.width - field.w) / 2;
-    field.y = (canvas.height - field.h) / 2;
-
-    // ================== プレイヤー ==================
-    const player = {
-      w: 20,
-      h: 20,
-      speed: 5,
-      x: field.x + field.w / 2 - 10,
-      y: field.y + field.h / 2 - 10
-    };
-
-    // ================== 入力管理 ==================
-    const keys = {};
-    document.addEventListener("keydown", (e) => { keys[e.code] = true; });
-    document.addEventListener("keyup", (e) => { keys[e.code] = false; });
-
-    // ================== 更新処理 ==================
-    function update() {
-      if(keys["KeyA"]) player.x -= player.speed;
-      if(keys["KeyD"]) player.x += player.speed;
-      if(keys["KeyW"]) player.y -= player.speed;
-      if(keys["KeyS"]) player.y += player.speed;
-
-      // フィールド内制限
-      player.x = Math.max(field.x, Math.min(field.x + field.w - player.w, player.x));
-      player.y = Math.max(field.y, Math.min(field.y + field.h - player.h, player.y));
-    }
-
-    // ================== 描画処理 ==================
-    function draw() {
-      // 画面全体クリア（背景色）
-      ctx.fillStyle = "#222"; 
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // フィールド（中央四角）
-      ctx.strokeStyle = "white";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(field.x, field.y, field.w, field.h);
-
-      // プレイヤー
-      ctx.fillStyle = "cyan";
-      ctx.fillRect(player.x, player.y, player.w, player.h);
-    }
-
-    // ================== メインループ ==================
-    function loop() {
-      update();
-      draw();
-      requestAnimationFrame(loop);
-    }
-
-    loop();
-  </script>
+  <script src="main.js"></script>
 </body>
 </html>
