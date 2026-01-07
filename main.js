@@ -1,4 +1,3 @@
-console.log(canvas.width, canvas.height);
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
